@@ -1,0 +1,40 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main  
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest 
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up CMake
+        uses: actions/setup-cmake@v2
+        with:
+          cmake-version: '3.21.1' 
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo make bootstrap_lib
+
+      - name: Build with CMake
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
+
+      #- name: Run tests
+      #  run: |
+      #    cd build
+      #    make test  
