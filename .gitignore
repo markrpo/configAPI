@@ -1,6 +1,13 @@
 # Prerequisites
 *.d
 
+#crow_all.hpp
+crow_all.h
+
+#build
+build
+build/*
+
 # Compiled Object files
 *.slo
 *.lo
