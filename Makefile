@@ -64,7 +64,7 @@ bootstrap_lib:
 	@$(SUDO) apt-get install -y libasio-dev
 	@$(SUDO) apt-get install -y redis-server
 	@$(SUDO) apt-get install -y libhiredis-dev 
-	@$(SUDO) apt-get install -y yaml-cpp
+	# @$(SUDO) apt-get install -y yaml-cpp 
 
 .PHONY: build_local clean build_arm docker_clean install_docker bootstrap_lib compile_crow
 
