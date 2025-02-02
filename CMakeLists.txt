@@ -13,21 +13,21 @@ endif()
 
 # Download and compile crow_all.hpp
 add_custom_command(
-OUTPUT ${CMAKE_SOURCE_DIR}/include/crow_all.hpp  
+OUTPUT ${CMAKE_SOURCE_DIR}/include/crow_all.h  
 COMMAND make compile_crow               
 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} 
-COMMENT "Generating crow_all.hpp"
+COMMENT "Generating crow_all.h"
 )
 
 # Add a custom target to make sure the crow_all.hpp is generated before the executable
 add_custom_target(
 	generate_crow
-	DEPENDS ${CMAKE_SOURCE_DIR}/include/crow_all.hpp 
+	DEPENDS ${CMAKE_SOURCE_DIR}/include/crow_all.h 
 )
 
 # Set sources and headers files
 set(SOURCES src/api.cpp src/routes.cpp)
-set(HEADERS src/routes.hpp include/crow_all.hpp)
+set(HEADERS src/routes.hpp include/crow_all.h)
 
 # Add executable
 add_executable(MyCrowApp ${SOURCES} ${HEADERS})
