@@ -14,6 +14,7 @@ INCLUDES=./include
 
 compile_crow:
 	@$(SUDO) echo "Using sudo!!"
+	@mkdir -p $(INCLUDES)
 	@$(SUDO) rm -rf $(INCLUDES)/crow_all.h
 	@git clone -b v1.2.0  https://github.com/CrowCpp/Crow.git
 	@cd ./Crow/scripts && sudo ./merge_all.py ../include crow_all.h
