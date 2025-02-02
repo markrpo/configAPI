@@ -61,6 +61,7 @@ docker_clean:
 
 bootstrap_lib:
 	@$(SUDO) apt-get update
+	@$(SUDO) apt-get install -y gtest
 	@$(SUDO) apt-get install -y cmake g++
 	@$(SUDO) apt-get install -y libasio-dev
 	@$(SUDO) apt-get install -y redis-server
