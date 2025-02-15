@@ -4,8 +4,13 @@ project(MyCrowApp)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SQLITE3 REQUIRED sqlite3)
+pkg_check_modules(NLOHMANN_JSON REQUIRED nlohmann_json)
+
 # Find asio header
 find_path(ASIO_INCLUDE_DIR asio.hpp PATHS /usr/include /usr/local/include third_party/asio/include)
+
 
 if(NOT ASIO_INCLUDE_DIR)
 	message(FATAL_ERROR "Could not find asio.hpp")
@@ -33,7 +38,7 @@ set(HEADERS src/routes.hpp include/crow_all.h)
 add_executable(MyCrowApp ${SOURCES} ${HEADERS})
 
 # Include directories PRIVATE means only this target can see the include directories
-target_include_directories(MyCrowApp PRIVATE include ${ASIO_INCLUDE_DIR}) 
+target_include_directories(MyCrowApp PRIVATE include ${ASIO_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIRS} ${NLOHMANN_JSON_INCLUDE_DIRS}) 
 
 # Link libraries
-target_link_libraries(MyCrowApp)
+target_link_libraries(MyCrowApp ${SQLITE3_LIBRARIES} ${NLOHMANN_JSON_LIBRARIES})

@@ -1,0 +1,39 @@
+{
+  "services": [
+    {
+      "id": "EMS-config",
+      "description": "EMS Configuration",
+      "xml_root_path": "/ems",
+      "database_table": "ems_config",
+      "parameters": [
+        {
+          	"name": "id",
+          	"xml_source": "@id",
+		  	"_comment": "@id is the attribute of the root element in this case: <ems id=\"1\">", 
+          	"db_column": "user_id",
+          	"type": "INTEGER",
+          	"is_attribute": true,
+          	"is_primary_key": true
+        },
+        {
+          	"name": "inteval",
+          	"xml_source": "interval",
+          	"db_column": "interval",
+          	"type": "INTEGER"
+        },
+        {
+          	"name": "wait_time",
+          	"xml_source": "wait_time",
+          	"db_column": "wait_time",
+          	"type": "INTEGER"
+        },
+		{
+	  		"name": "name",
+	  		"xml_source": "name",
+	  		"db_column": "name",
+	  		"type": "STRING"
+		}
+      ]
+    }
+  ]
+}
