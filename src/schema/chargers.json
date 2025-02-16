@@ -1,0 +1,36 @@
+{
+  "services": [
+    {
+      "id": "Chargers",
+      "description": "Chargers",
+      "xml_root_path": "/ems/chargers/charger",
+      "database_table": "chargers",
+      "parameters": [
+        {
+          	"name": "id",
+          	"xml_source": "id",
+          	"db_column": "charger_id",
+          	"type": "TEXT"
+        },
+		{
+	  		"name": "mode",
+	  		"xml_source": "mode",
+	  		"db_column": "mode",
+	  		"type": "mode"
+		},
+		{
+			"name": "max_current",
+			"xml_source": "max_current",
+			"db_column": "max_current",
+			"type": "TEXT"
+		},
+		{
+			"name": "evse",
+			"xml_source": "evse",
+			"db_column": "evse",
+			"type": "TEXT"
+		}
+      ]
+    }
+  ]
+}
