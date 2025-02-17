@@ -45,6 +45,8 @@ void process_service(const json& service, const std::string& xml_path) {
 			std::cout << "XML [" << xml_path << "] parsed with errors, attr value: [" << result.description() << "]" << std::endl;
 		}
 		pugi::xml_node node = doc.child("ems"); // root node
+		// config node
+		node = node.child("config");
 		if (!node) {
 			std::cout << "Root node not found" << std::endl;
 		}
@@ -116,6 +118,35 @@ void generate_xml(const std::string& db_path, const std::string& xml_path) {
     sqlite3_close(db);
 }
 
+void process_evchargers(const json& evcharger, const std::string& xml_path) {
+	std::string sql = "CREATE TABLE IF NOT EXISTS evcharger (id INTEGER PRIMARY KEY, ";
+	std::cout << "Processing evcharger" << std::endl;
+	// create query for creating table
+	for (const auto& param : evcharger["parameters"]) {
+		std::cout << "Processing evcharger parameters" << std::endl;
+		std::string db_column = param["db_column"];
+		std::string type = param["type"];
+		sql += db_column + " TEXT, ";
+		std::cout << "db_column: " << db_column << ", type: " << type << std::endl;
+	}
+	sql.pop_back(); // remove last comma
+	sql.pop_back(); // remove last space
+	sql += ");";
+	std::cout << "sql: " << sql << std::endl;
+
+	// create table
+	insert_db("./schema/ems.db", sql);
+	
+	sql.clear();
+
+	pugi::xml_document doc;
+	doc.load_file(xml_path.c_str());
+	pugi::xpath_node_set evchargers = doc.select_nodes("/ems/assets/evcharger");
+	int number_of_evchargers = evchargers.size();
+	std::cout << "Number of evchargers: " << number_of_evchargers << std::endl;
+}
+	
+
 void start_sqlite(const std::string& db_path) {
     sqlite3* db;
     int rc = sqlite3_open(db_path.c_str(), &db);
@@ -139,7 +170,7 @@ void delete_all_db(const std::string& db_path) {
 	std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
 	sqlite3_close(db);
     }
-	std::string sql = "DELETE FROM ems_config;"; // delete all rows
+	std::string sql = "DROP TABLE IF EXISTS ems_config;"; // delete table
     rc = sqlite3_exec(db, sql.c_str(), 0, 0, 0); 
     if (rc != SQLITE_OK) {
 		std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
@@ -155,6 +186,11 @@ int main() {
     for (const auto& service : config["services"]) {
 	process_service(service, "./schema/ems.xml");
     }
+	json evchargers = load_config("./schema/chargers.json");
+	std::cout << "loaded evchargers" << std::endl;
+	for (const auto& evcharger : evchargers["services"]) {
+		process_evchargers(evcharger, "./schema/ems.xml");
+	}
 	// remove emsoutput.xml
 	std::remove("./schema/emsoutput.xml");
 	generate_xml("./schema/ems.db", "./schema/emsoutput.xml");

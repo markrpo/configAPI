@@ -3,7 +3,7 @@
     {
       "id": "Chargers",
       "description": "Chargers",
-      "xml_root_path": "/ems/chargers/charger",
+      "xml_root_path": "/ems/assets",
       "database_table": "chargers",
       "parameters": [
         {
@@ -27,8 +27,8 @@
 		{
 			"name": "evse",
 			"xml_source": "evse",
-			"db_column": "evse",
-			"type": "TEXT"
+			"db_column": "evse_number",
+			"type": "ARRAY"
 		}
       ]
     }
