@@ -1,0 +1,22 @@
+{
+  "ems": [
+    {
+      "id": "config",
+	  "database_table": "ems_config",
+      "xml_path": "/ems/config",
+	  "wants": "all"
+    },
+	{
+	  "id": "mqtt",
+	  "database_table": "mqtt",
+	  "xml_path": "/ems/config",
+	  "wants": ["broker"] 
+	},
+	{
+	"id": "chargers",	
+	"database_table": "chargers",
+	"xml_path": "/ems/chargers",
+	"wants": "all"
+	}
+  ]
+}

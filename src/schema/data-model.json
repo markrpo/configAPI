@@ -1,0 +1,154 @@
+{
+  "DataModel": [
+    {
+      "id": "Network",
+      "description": "All configuration related to networks (eth0, NTP, DNS, etc.)",
+      "database_table": "networking",
+	  "unique": true,
+      "parameters": [
+        {
+          	"name": "eth0_ip",
+          	"db_column": "eth0_ip",
+          	"type": "string"
+        },
+		{
+	  		"name": "eth0_netmask",
+	  		"db_column": "eth0_netmask",
+	  		"type": "int"
+		},
+		{
+			"name": "eth0_gateway",
+			"db_column": "eth0_gateway",
+			"type": "string"
+		},
+		{
+			"name": "dhcp",
+			"db_column": "dhcp",
+			"type": "bool"
+		},
+		{
+			"name": "eth0_dns",
+			"db_column": "eth0_dns",
+			"type": "string"
+		},
+		{
+			"name": "ntp_server",
+			"db_column": "ntp_server",
+			"type": "string"
+		},
+		{
+			"name": "dns_server",
+			"db_column": "dns_server",
+			"type": "string"
+		}
+      ]
+    },
+	{
+	"id": "Forwarding",
+	"description": "All configuration related to forwarding (NAT, etc.)",
+	"database_table": "forwarding",
+	"unique": false,
+	"parameters": [
+		{
+			"name": "device_ip",
+			"db_column": "device_ip",
+			"type": "BOOLEAN"
+		},
+		{
+			"name": "device_port",
+			"db_column": "device_port",
+			"type": "TEXT"
+		},
+		{
+			"name": "local_port",
+			"db_column": "local_port",
+			"type": "TEXT"
+		}
+	  ]
+	},
+	{
+		"id": "broker",
+		"description": "connection to the broker",
+		"database_table": "broker",
+		"unique": true,
+		"parameters": [
+			{
+				"name": "broker_ip",
+				"db_column": "broker_ip",
+				"type": "string"
+			},
+			{
+				"name": "broker_user",
+				"db_column": "broker_user",
+				"type": "string"
+			},
+			{
+				"name": "broker_password",
+				"db_column": "broker_password",
+				"type": "string"
+			}
+		]
+	},
+	{
+	"id": "ems-config",
+	"description": "All configuration related to energy management system",
+	"database_table": "ems_config",
+	"unique": true,
+	"parameters": [
+		{
+			"name": "debug",
+			"db_column": "debug",
+			"type": "bool"
+		},
+		{
+			"name": "interval",
+			"db_column": "interval",
+			"type": "int"
+		},
+		{
+			"name": "wait_time",
+			"db_column": "wait_time",
+			"type": "int"
+		},
+		{
+			"name": "mode",
+			"db_column": "mode",
+			"type": "string"
+		},
+		{
+			"name": "max_power",
+			"db_column": "max_power",
+			"type": "string"
+		}
+	  ]
+	},
+	{
+		"id": "chargers",
+		"description": "All configuration related to chargers",
+		"database_table": "chargers",
+		"unique": false,
+		"parameters": [
+			{
+				"name": "name",
+				"db_column": "name",
+				"type": "int"
+			},
+			{
+				"name": "device_ip",
+				"db_column": "device_ip",
+				"type": "string"
+			},
+			{
+				"name": "device_port",
+				"db_column": "device_port",
+				"type": "int"
+			},
+			{
+				"name": "local_port",
+				"db_column": "local_port",
+				"type": "int"
+			}
+		]
+	}
+  ]
+}

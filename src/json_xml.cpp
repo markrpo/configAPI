@@ -147,30 +147,15 @@ void process_evchargers(const json& evcharger, const std::string& xml_path) {
 }
 	
 
-void start_sqlite(const std::string& db_path) {
+void delete_all_db(const std::string& db_path, const std::string& table) {
     sqlite3* db;
     int rc = sqlite3_open(db_path.c_str(), &db);
     if (rc) {
 	std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
 	sqlite3_close(db);
     }
-	const char* sql = "CREATE TABLE IF NOT EXISTS ems_config (id INTEGER PRIMARY KEY, atribute TEXT, xml_source TEXT, value TEXT, type TEXT);";
-    rc = sqlite3_exec(db, sql, 0, 0, 0); 
-    if (rc != SQLITE_OK) {
-		std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
-		sqlite3_close(db);
-    }
-    sqlite3_close(db);
-}
-
-void delete_all_db(const std::string& db_path) {
-    sqlite3* db;
-    int rc = sqlite3_open(db_path.c_str(), &db);
-    if (rc) {
-	std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
-	sqlite3_close(db);
-    }
-	std::string sql = "DROP TABLE IF EXISTS ems_config;"; // delete table
+	std::string sql = "DROP TABLE IF EXISTS " + table + ";";
+	std::cout << "sql: " << sql << std::endl;
     rc = sqlite3_exec(db, sql.c_str(), 0, 0, 0); 
     if (rc != SQLITE_OK) {
 		std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
@@ -179,11 +164,54 @@ void delete_all_db(const std::string& db_path) {
     sqlite3_close(db);
 }
 
-int main() { 
-	delete_all_db("./schema/ems.db");
-	start_sqlite("./schema/ems.db");
-    json config = load_config("./schema/config.json");
-    for (const auto& service : config["services"]) {
+void start_sqlite(const std::string& db_path, const json& config) {
+	sqlite3* db;
+    int rc = sqlite3_open(db_path.c_str(), &db);
+    if (rc) {
+		std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+		sqlite3_close(db);
+    }
+	for (const auto& table : config["DataModel"]) {
+		std::string table_name = table["database_table"];
+		bool unique = table["unique"];
+		std::cout << "Unique: " << unique << std::endl;
+		std::string sql;
+		if (!unique) { 
+			sql = "CREATE TABLE IF NOT EXISTS " + table_name + " (id INTEGER PRIMARY KEY, ";
+		} else 
+		{
+			sql = "CREATE TABLE IF NOT EXISTS " + table_name + " (";
+		}
+		for (const auto& column : table["parameters"]) {
+			std::string column_name = column["db_column"];
+			std::string type = "TEXT";
+			sql += column_name + " " + type + ", ";
+		}
+		sql.pop_back(); 
+		sql.pop_back(); 
+		sql += ");";
+		rc = sqlite3_exec(db, sql.c_str(), 0, 0, 0);
+		std::cout << "sql: " << sql << std::endl;	
+		if (rc != SQLITE_OK) {
+			std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
+			sqlite3_close(db);
+		}
+	}
+    sqlite3_close(db);
+
+}
+
+
+
+int main() {
+    json config = load_config("./schema/data-model.json");
+	for (const auto& table : config["DataModel"]) {
+		std::string table_name = table["database_table"];
+		delete_all_db("./schema/db/data-model.db", table_name);
+	}
+	start_sqlite("./schema/db/data-model.db", config);
+
+    /*for (const auto& service : config["services"]) {
 	process_service(service, "./schema/ems.xml");
     }
 	json evchargers = load_config("./schema/chargers.json");
@@ -193,6 +221,6 @@ int main() {
 	}
 	// remove emsoutput.xml
 	std::remove("./schema/emsoutput.xml");
-	generate_xml("./schema/ems.db", "./schema/emsoutput.xml");
+	generate_xml("./schema/ems.db", "./schema/emsoutput.xml");*/
     return 0;
 }
