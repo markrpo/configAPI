@@ -1,5 +1,6 @@
 {
-  "ems": [
+  "root": "/ems",
+  "xml": [
     {
       "id": "config",
 	  "database_table": "ems_config",
@@ -8,7 +9,7 @@
     },
 	{
 	  "id": "mqtt",
-	  "database_table": "mqtt",
+	  "database_table": "broker",
 	  "xml_path": "/ems/config",
 	  "wants": ["broker"] 
 	},

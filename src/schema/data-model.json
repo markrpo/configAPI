@@ -4,6 +4,7 @@
       "id": "Network",
       "description": "All configuration related to networks (eth0, NTP, DNS, etc.)",
       "database_table": "networking",
+	  "default_sql": "INSERT INTO networking (eth0_ip, eth0_netmask, eth0_gateway, dhcp, eth0_dns, ntp_server, dns_server) VALUES ('192.168.10.1', 24, '', false, '', '172.10.101.2', '172.10.101.2')",
 	  "unique": true,
       "parameters": [
         {
@@ -47,6 +48,7 @@
 	"id": "Forwarding",
 	"description": "All configuration related to forwarding (NAT, etc.)",
 	"database_table": "forwarding",
+	"default_sql": "",
 	"unique": false,
 	"parameters": [
 		{
@@ -70,6 +72,7 @@
 		"id": "broker",
 		"description": "connection to the broker",
 		"database_table": "broker",
+		"default_sql": "INSERT INTO broker (broker_ip, broker_user, broker_password) VALUES ('localhost:1883', '', '')",
 		"unique": true,
 		"parameters": [
 			{
@@ -93,6 +96,7 @@
 	"id": "ems-config",
 	"description": "All configuration related to energy management system",
 	"database_table": "ems_config",
+	"default_sql": "INSERT INTO ems_config (debug, interval, wait_time, mode, max_power) VALUES (false, 10, 10, 'auto', '10')",
 	"unique": true,
 	"parameters": [
 		{
@@ -126,6 +130,7 @@
 		"id": "chargers",
 		"description": "All configuration related to chargers",
 		"database_table": "chargers",
+		"default_sql": "",
 		"unique": false,
 		"parameters": [
 			{
@@ -134,18 +139,18 @@
 				"type": "int"
 			},
 			{
-				"name": "device_ip",
-				"db_column": "device_ip",
+				"name": "mode",
+				"db_column": "mode",
 				"type": "string"
 			},
 			{
-				"name": "device_port",
-				"db_column": "device_port",
+				"name": "max_current",
+				"db_column": "max_current",
 				"type": "int"
 			},
 			{
-				"name": "local_port",
-				"db_column": "local_port",
+				"name": "phase",
+				"db_column": "phase",
 				"type": "int"
 			}
 		]

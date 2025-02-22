@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
 #include <sqlite3.h>
 #include <nlohmann/json.hpp>
 #include <pugixml.hpp>
@@ -201,6 +202,92 @@ void start_sqlite(const std::string& db_path, const json& config) {
 
 }
 
+void load_default(const std::string& db_path, const json& config) {
+	sqlite3* db;
+    int rc = sqlite3_open(db_path.c_str(), &db);
+    if (rc) {
+		std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+		sqlite3_close(db);
+    }
+	for (const auto& table : config["DataModel"]) {
+		std::string table_name = table["database_table"];
+		std::string sql = table["default_sql"];
+	   	if (sql.empty()) {	
+			continue;
+		}
+		rc = sqlite3_exec(db, sql.c_str(), 0, 0, 0);
+		std::cout << "sql: " << sql << std::endl;	
+		if (rc != SQLITE_OK) {
+			std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
+			sqlite3_close(db);
+		}
+	}
+    sqlite3_close(db);
+}
+
+// split path by / and return vector of strings example: /ems/config -> ["ems", "config"]
+std::vector<std::string> split_paths(const std::string& path) {
+    std::vector<std::string> segments;
+    std::stringstream ss(path);
+    std::string segment;
+    
+    while (std::getline(ss, segment, '/')) {
+        if (!segment.empty()) { 
+            segments.push_back(segment);
+        }
+    }
+    
+    return segments;
+}
+
+void generate_service(const std::string& db_path, json& service, const std::string& xml_path) {
+	sqlite3* db;
+    int rc = sqlite3_open(db_path.c_str(), &db);
+    if (rc) {
+		std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+		sqlite3_close(db);
+    }
+	pugi::xml_document doc;
+	doc.load_file(xml_path.c_str());
+	// generate root node
+	pugi::xml_node root = doc.append_child(service["root"].get<std::string>().c_str());
+	// generate child nodes
+	for (const auto& param : service["xml"]) {
+		std::string databalse_table = param["database_table"];
+		std::string xml_path = param["xml_path"]; // example: /ems/config maybe does not exist, split by /
+		std::vector<std::string> xml_segments = split_paths(xml_path);
+		for (const auto& segment : xml_segments) {
+			// generate if not exists
+			pugi::xml_node node = root.child(segment.c_str());
+			if (!node) {
+				node = root.append_child(segment.c_str());
+			}
+		}
+		pugi::xml_node node = root.child(xml_segments.back().c_str()); // get last element
+
+		std::string sql = "SELECT * FROM " + databalse_table + ";";
+		sqlite3_stmt* stmt;
+		rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, 0);
+		if (rc != SQLITE_OK) {
+			std::cerr << "SQL error: " << sqlite3_errmsg(db) << std::endl;
+		}
+		sqlite3_step(stmt); // get first row
+							// xml source = column name
+							// value = column value
+		std::string value;
+		std::string xml_source;
+		
+		// for each column in table get value and xml_source
+		for (int i = 0; i < sqlite3_column_count(stmt); i++) {
+			xml_source = std::string(reinterpret_cast<const char*>(sqlite3_column_name(stmt, i)));
+			value = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, i)));
+			std::cout << "xml_source: " << xml_source << ", value: " << value << std::endl;
+			//pugi::xml_node sub_value = node.append_child(xml_source.c_str());
+			//sub_value.append_child(pugi::node_pcdata).set_value(value.c_str());
+		}
+
+	}	
+}
 
 
 int main() {
@@ -210,6 +297,9 @@ int main() {
 		delete_all_db("./schema/db/data-model.db", table_name);
 	}
 	start_sqlite("./schema/db/data-model.db", config);
+	load_default("./schema/db/data-model.db", config);
+	json services = load_config("./schema/ems-model.json");
+	generate_service("./schema/db/data-model.db", services, "./schema/etc/emsoutput.xml");
 
     /*for (const auto& service : config["services"]) {
 	process_service(service, "./schema/ems.xml");
