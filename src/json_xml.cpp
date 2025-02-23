@@ -132,10 +132,27 @@ void generate_service(sqlite3* db, const json& service, const std::string& xml_p
 	}	
 }
 
+void test(const char*& argv) {
+	std::cout << "argv: " << argv << std::endl;
+	/* Things about cout:
+	 * with a char* or const char* it will print all the characters until it finds a null character '\0'
+	 * with std::string the same.
+	 * with a int, float, double, etc it will print the value of the variable.
+	 * witha pointer that is not a char* or const char* it will print the memory address, so with a int* you need to dereference it to get the value:
+	 * int a = 5;
+	 * int* b = &a;
+	 * std::cout << b << std::endl; // will print the memory address
+	 * std::cout << *b << std::endl; // will print the value of a
+	 */
+}
+
 
 int main() {
 
-	ServiceData& sd = ServiceData::getInstance("./schema", "./schema/db/data-model.db");
+	const char* argv = "test";
+	test(argv);
+
+	ServiceData& sd = ServiceData::getInstance();
 
 	for (const auto& table : sd.get_data_model()["DataModel"]) {
 		std::string table_name = table["database_table"];
