@@ -1,5 +1,14 @@
 <?xml version="1.0"?>
 <ems>
-	<interval>10555550</interval>
-	<wait_time>1000</wait_time>
+	<config>
+		<debug>0</debug>
+		<interval>10</interval>
+		<wait_time>10</wait_time>
+		<mode>auto</mode>
+		<max_power>10</max_power>
+		<broker_ip>localhost:1883</broker_ip>
+		<broker_user></broker_user>
+		<broker_password></broker_password>
+	</config>
+	<chargers />
 </ems>

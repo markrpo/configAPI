@@ -92,21 +92,30 @@ std::vector<std::string> split_paths(const std::string& path) {
 void generate_service(sqlite3* db, const json& service, const std::string& xml_path) {
 	pugi::xml_document doc;
 	doc.load_file(xml_path.c_str());
-	// generate root node
-	pugi::xml_node root = doc.append_child(service["root"].get<std::string>().c_str());
+	if (!doc) {
+		std::cerr << "Could not load xml file" << std::endl;
+	}
+	std::cout << "xml_path: " << xml_path << std::endl;
+	pugi::xml_node root = doc;
 	// generate child nodes
 	for (const auto& param : service["xml"]) {
+		pugi::xml_node node = root;
+		std::cout << "Node: " << node.name() << std::endl;
 		std::string databalse_table = param["database_table"];
 		std::string xml_path = param["xml_path"]; // example: /ems/config maybe does not exist, split by /
 		std::vector<std::string> xml_segments = split_paths(xml_path);
 		for (const auto& segment : xml_segments) {
 			// generate if not exists
-			pugi::xml_node node = root.child(segment.c_str());
-			if (!node) {
-				node = root.append_child(segment.c_str());
+			std::cout << "segment: " << segment << std::endl;
+			pugi::xml_node node2 = node.child(segment.c_str());
+			if (!node2) {
+				std::cout << "node does not exist, creating" << std::endl;
+				node = node.append_child(segment.c_str());
+				std::cout << "Node: " << node.name() << std::endl;
+			} else {
+				node = node2;
 			}
 		}
-		pugi::xml_node node = root.child(xml_segments.back().c_str()); // get last element
 
 		std::string sql = "SELECT * FROM " + databalse_table + ";";
 		sqlite3_stmt* stmt;
@@ -123,13 +132,18 @@ void generate_service(sqlite3* db, const json& service, const std::string& xml_p
 		// for each column in table get value and xml_source
 		for (int i = 0; i < sqlite3_column_count(stmt); i++) {
 			xml_source = std::string(reinterpret_cast<const char*>(sqlite3_column_name(stmt, i)));
-			value = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, i)));
+			if (sqlite3_column_text(stmt, i) == NULL) {
+				continue;
+			} else {
+				value = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, i)));
+			}
 			std::cout << "xml_source: " << xml_source << ", value: " << value << std::endl;
-			//pugi::xml_node sub_value = node.append_child(xml_source.c_str());
-			//sub_value.append_child(pugi::node_pcdata).set_value(value.c_str());
+			pugi::xml_node sub_value = node.append_child(xml_source.c_str());
+			sub_value.append_child(pugi::node_pcdata).set_value(value.c_str());
 		}
-
-	}	
+		sqlite3_finalize(stmt);
+	}
+	doc.save_file(xml_path.c_str());
 }
 
 void test(const char*& argv) {
@@ -151,6 +165,9 @@ int main() {
 
 	const char* argv = "test";
 	test(argv);
+
+	//delete xml:
+	std::remove("./schema/etc/emsoutput.xml");
 
 	ServiceData& sd = ServiceData::getInstance();
 
