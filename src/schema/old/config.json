@@ -27,12 +27,18 @@
           	"db_column": "wait_time",
           	"type": "INTEGER"
         },
+        {
+            "name": "name",
+            "xml_source": "name",
+            "db_column": "name",
+            "type": "STRING"
+		},
 		{
-	  		"name": "name",
-	  		"xml_source": "name",
-	  		"db_column": "name",
-	  		"type": "STRING"
-		}
+            "name": "description",
+			"xml_source": "description",
+			"db_column": "description",
+			"type": "STRING"
+        }
       ]
     }
   ]

@@ -1,44 +1,73 @@
 cmake_minimum_required(VERSION 3.10)
-project(MyCrowApp)
+project(configapi)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SQLITE3 REQUIRED sqlite3)
-pkg_check_modules(NLOHMANN_JSON REQUIRED nlohmann_json)
+# Find libpahoC 
+find_path(NLOHMANN_JSON_INCLUDE_DIR
+	NAMES json.hpp
+	PATHS /usr/include/nlohmann /usr/local/include/nlohmann
+	)
 
-# Find asio header
-find_path(ASIO_INCLUDE_DIR asio.hpp PATHS /usr/include /usr/local/include third_party/asio/include)
+find_path(SQLITE3_INCLUDE_DIR
+	NAMES sqlite3.h
+	PATHS /usr/include /usr/local/include
+	)
 
+find_library(SQLITE3_LIBRARIES
+	NAMES sqlite3
+	PATHS /usr/lib /usr/local/lib
+	)
 
-if(NOT ASIO_INCLUDE_DIR)
-	message(FATAL_ERROR "Could not find asio.hpp")
+find_path(PUGIXML_INCLUDE_DIR
+	NAMES pugixml.hpp
+	PATHS /usr/include /usr/local/include
+	)
+
+find_library(PUGIXML_LIBRARIES
+	NAMES pugixml
+	PATHS /usr/lib /usr/local/lib
+	)
+
+# Check if all libraries are found
+if (NLOHMANN_JSON_INCLUDE_DIR)
+	message(STATUS "Found nlohmann_json")
+	message(STATUS "Include dir: ${NLOHMANN_JSON_INCLUDE_DIR}")
+else()
+	message(STATUS "Include dir: ${NLOHMANN_JSON_INCLUDE_DIR}")
+	message(FATAL_ERROR "nlohmann_json not found")
 endif()
 
-# Download and compile crow_all.hpp
-add_custom_command(
-OUTPUT ${CMAKE_SOURCE_DIR}/include/crow_all.h  
-COMMAND make compile_crow               
-WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} 
-COMMENT "Generating crow_all.h"
-)
+if (SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARIES)
+	message(STATUS "Found sqlite3")
+	message(STATUS "Include dir: ${SQLITE3_INCLUDE_DIR}")
+	message(STATUS "Library: ${SQLITE3_LIBRARIES}")
+else()
+	message(STATUS "Include dir: ${SQLITE3_INCLUDE_DIR}")
+	message(STATUS "Library: ${SQLITE3_LIBRARIES}")
+	message(FATAL_ERROR "sqlite3 not found")
+endif()
 
-# Add a custom target to make sure the crow_all.hpp is generated before the executable
-add_custom_target(
-	generate_crow
-	DEPENDS ${CMAKE_SOURCE_DIR}/include/crow_all.h 
-)
+if (PUGIXML_INCLUDE_DIR AND PUGIXML_LIBRARIES)
+	message(STATUS "Found pugixml")
+	message(STATUS "Include dir: ${PUGIXML_INCLUDE_DIR}")
+	message(STATUS "Library: ${PUGIXML_LIBRARIES}")
+else()
+	message(STATUS "Include dir: ${PUGIXML_INCLUDE_DIR}")
+	message(STATUS "Library: ${PUGIXML_LIBRARIES}")
+	message(FATAL_ERROR "pugixml not found")
+endif()
 
 # Set sources and headers files
-set(SOURCES src/api.cpp src/routes.cpp)
-set(HEADERS src/routes.hpp include/crow_all.h)
+set(SOURCES src/json_xml.cpp src/config.cpp)
+set(HEADERS src/config.hpp)
 
 # Add executable
-add_executable(MyCrowApp ${SOURCES} ${HEADERS})
+add_executable(configapi ${SOURCES} ${HEADERS})
 
 # Include directories PRIVATE means only this target can see the include directories
-target_include_directories(MyCrowApp PRIVATE include ${ASIO_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIRS} ${NLOHMANN_JSON_INCLUDE_DIRS}) 
+target_include_directories(configapi PRIVATE include ${NLOHMANN_JSON_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIR} ${PUGIXML_INCLUDE_DIR}) 
 
 # Link libraries
-target_link_libraries(MyCrowApp ${SQLITE3_LIBRARIES} ${NLOHMANN_JSON_LIBRARIES})
+target_link_libraries(configapi PRIVATE  ${NLOHMANN_JSON_LIBRARIES} ${SQLITE3_LIBRARIES} ${PUGIXML_LIBRARIES})

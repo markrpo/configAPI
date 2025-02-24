@@ -1,0 +1,23 @@
+{
+  "root": "/ems",
+  "xml": [
+    {
+      "id": "config",
+	  "database_table": "ems_config",
+      "xml_path": "/ems/config",
+	  "wants": "all"
+    },
+	{
+	  "id": "mqtt",
+	  "database_table": "broker",
+	  "xml_path": "/ems/config",
+	  "wants": ["broker"] 
+	},
+	{
+	"id": "chargers",	
+	"database_table": "chargers",
+	"xml_path": "/ems/chargers",
+	"wants": "all"
+	}
+  ]
+}

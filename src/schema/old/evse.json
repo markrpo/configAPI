@@ -1,0 +1,30 @@
+{
+  "services": [
+    {
+      "id": "EVSE",
+      "description": "EVSEs of the chargers",
+      "xml_root_path": "/ems/chargers/charger/EVSE",
+      "database_table": "evses", 
+      "parameters": [
+        {
+          	"name": "id",
+          	"xml_source": "id",
+          	"db_column": "charger_id",
+          	"type": "TEXT"
+        },
+		{
+	  		"name": "mode",
+	  		"xml_source": "mode",
+	  		"db_column": "mode",
+	  		"type": "mode"
+		},
+		{
+			"name": "max_current",
+			"xml_source": "max_current",
+			"db_column": "max_current",
+			"type": "TEXT"
+		}
+      ]
+    }
+  ]
+}

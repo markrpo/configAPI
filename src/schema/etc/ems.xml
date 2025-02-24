@@ -1,0 +1,16 @@
+<ems>
+	<config>
+		<interval>10555550</interval>
+		<wait_time>1000</wait_time>
+	</config>
+	<assets>
+		<evcharger>
+			<id>1</id>
+			<type>evcharger</type>
+		</evcharger>
+		<evcharger>
+			<id>2</id>
+			<type>evcharger</type>
+		</evcharger>
+	</assets>
+</ems>

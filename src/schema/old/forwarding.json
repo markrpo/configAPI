@@ -1,0 +1,31 @@
+{
+  "networking": [
+    {
+      "id": "Forwarding",
+      "description": "IP forwarding for ETH0",
+      "database_table": "eth_forwarding",
+      "parameters": [
+        {
+			"name": "id",
+			"db_column": "id",
+			"type": "int"
+		},
+		{
+			"name": "device_ip",
+			"db_column": "device_ip",
+			"type": "string"
+		},
+		{
+			"name": "device_port",
+			"db_column": "device_port",
+			"type": "int"
+		},
+		{
+			"name": "local_port",
+			"db_column": "local_port",
+			"type": "string"
+		}
+      ]
+    }
+  ]
+}

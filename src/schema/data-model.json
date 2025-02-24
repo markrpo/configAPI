@@ -1,0 +1,159 @@
+{
+  "DataModel": [
+    {
+      "id": "Network",
+      "description": "All configuration related to networks (eth0, NTP, DNS, etc.)",
+      "database_table": "networking",
+	  "default_sql": "INSERT INTO networking (eth0_ip, eth0_netmask, eth0_gateway, dhcp, eth0_dns, ntp_server, dns_server) VALUES ('192.168.10.1', 24, '', false, '', '172.10.101.2', '172.10.101.2')",
+	  "unique": true,
+      "parameters": [
+        {
+          	"name": "eth0_ip",
+          	"db_column": "eth0_ip",
+          	"type": "string"
+        },
+		{
+	  		"name": "eth0_netmask",
+	  		"db_column": "eth0_netmask",
+	  		"type": "int"
+		},
+		{
+			"name": "eth0_gateway",
+			"db_column": "eth0_gateway",
+			"type": "string"
+		},
+		{
+			"name": "dhcp",
+			"db_column": "dhcp",
+			"type": "bool"
+		},
+		{
+			"name": "eth0_dns",
+			"db_column": "eth0_dns",
+			"type": "string"
+		},
+		{
+			"name": "ntp_server",
+			"db_column": "ntp_server",
+			"type": "string"
+		},
+		{
+			"name": "dns_server",
+			"db_column": "dns_server",
+			"type": "string"
+		}
+      ]
+    },
+	{
+	"id": "Forwarding",
+	"description": "All configuration related to forwarding (NAT, etc.)",
+	"database_table": "forwarding",
+	"default_sql": "",
+	"unique": false,
+	"parameters": [
+		{
+			"name": "device_ip",
+			"db_column": "device_ip",
+			"type": "BOOLEAN"
+		},
+		{
+			"name": "device_port",
+			"db_column": "device_port",
+			"type": "TEXT"
+		},
+		{
+			"name": "local_port",
+			"db_column": "local_port",
+			"type": "TEXT"
+		}
+	  ]
+	},
+	{
+		"id": "broker",
+		"description": "connection to the broker",
+		"database_table": "broker",
+		"default_sql": "INSERT INTO broker (broker_ip, broker_user, broker_password) VALUES ('localhost:1883', '', '')",
+		"unique": true,
+		"parameters": [
+			{
+				"name": "broker_ip",
+				"db_column": "broker_ip",
+				"type": "string"
+			},
+			{
+				"name": "broker_user",
+				"db_column": "broker_user",
+				"type": "string"
+			},
+			{
+				"name": "broker_password",
+				"db_column": "broker_password",
+				"type": "string"
+			}
+		]
+	},
+	{
+	"id": "ems-config",
+	"description": "All configuration related to energy management system",
+	"database_table": "ems_config",
+	"default_sql": "INSERT INTO ems_config (debug, interval, wait_time, mode, max_power) VALUES (false, 10, 10, 'auto', '10')",
+	"unique": true,
+	"parameters": [
+		{
+			"name": "debug",
+			"db_column": "debug",
+			"type": "bool"
+		},
+		{
+			"name": "interval",
+			"db_column": "interval",
+			"type": "int"
+		},
+		{
+			"name": "wait_time",
+			"db_column": "wait_time",
+			"type": "int"
+		},
+		{
+			"name": "mode",
+			"db_column": "mode",
+			"type": "string"
+		},
+		{
+			"name": "max_power",
+			"db_column": "max_power",
+			"type": "string"
+		}
+	  ]
+	},
+	{
+		"id": "chargers",
+		"description": "All configuration related to chargers",
+		"database_table": "chargers",
+		"default_sql": "",
+		"unique": false,
+		"parameters": [
+			{
+				"name": "name",
+				"db_column": "name",
+				"type": "int"
+			},
+			{
+				"name": "mode",
+				"db_column": "mode",
+				"type": "string"
+			},
+			{
+				"name": "max_current",
+				"db_column": "max_current",
+				"type": "int"
+			},
+			{
+				"name": "phase",
+				"db_column": "phase",
+				"type": "int"
+			}
+		]
+	}
+  ]
+}

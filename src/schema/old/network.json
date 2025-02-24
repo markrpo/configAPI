@@ -1,0 +1,45 @@
+{
+  "networking": [
+    {
+      "id": "Network",
+      "description": "All configuration related to networks (eth0, NTP, DNS, etc.)",
+      "database_table": "networking",
+      "parameters": [
+        {
+          	"name": "eth0_ip",
+          	"db_column": "eth0_ip",
+          	"type": "TEXT"
+        },
+		{
+	  		"name": "eth0_netmask",
+	  		"db_column": "eth0_netmask",
+	  		"type": "TEXT"
+		},
+		{
+			"name": "eth0_gateway",
+			"db_column": "eth0_gateway",
+			"type": "TEXT"
+		},
+		{
+			"name": "dhcp",
+			"db_column": "dhcp",
+			"type": "BOOLEAN"
+		},
+			"name": "eth0_dns",
+			"db_column": "eth0_dns",
+			"type": "TEXT"
+		},
+		{
+			"name": "ntp_server",
+			"db_column": "ntp_server",
+			"type": "TEXT"
+		},
+		{
+			"name": "dns_server",
+			"db_column": "dns_server",
+			"type": "TEXT"
+		}
+      ]
+    }
+  ]
+}
