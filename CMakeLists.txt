@@ -1,8 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
 project(configapi)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# check if clang is used and set the stdlib to libc++ (libc++ is the C++ standard library for clang and by default clang uses libstdc++)
+# To compile with cmake use the following command: cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang ..
+# In build directory
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+endif()
 
 # Find libpahoC 
 find_path(NLOHMANN_JSON_INCLUDE_DIR

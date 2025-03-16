@@ -1,22 +1,5 @@
 #include "config.hpp"
-
-ServiceData::ServiceData() {
-			std::string data_model_path = this->model_path + "/data-model.json";
-			std::string ems_model_path = this->model_path + "/ems-model.json";
-			std::ifstream data_model_file(data_model_path);
-			std::ifstream ems_model_file(ems_model_path);
-
-			if (!data_model_file.is_open() || !ems_model_file.is_open()) {
-				std::cerr << "Error: Unable to open model files" << std::endl;
-				std::cerr << "Data model path: " << data_model_path << std::endl;
-				std::cerr << "EMS model path: " << ems_model_path << std::endl;
-				exit(1);
-			}
-			
-			this->data_model = json::parse(data_model_file);
-			this->ems_model = json::parse(ems_model_file);	
-			this->database = open_db(this->db_file);
-}
+#include "sqlite.hpp"
 
 ServiceData& ServiceData::getInstance() { 	// we dont have to put here static keyword because we are defining it inside the class (hpp file)
 	static ServiceData instance;										// instance will be created only once (constructor will be called only once because of static keyword)
@@ -24,15 +7,15 @@ ServiceData& ServiceData::getInstance() { 	// we dont have to put here static ke
 }
 
 const json& ServiceData::get_data_model() const{
-	return data_model;
+	return m_data_model;
 }
 
 const json& ServiceData::get_ems_model() const{
-	return ems_model;
+	return m_ems_model;
 }
 
 sqlite3* ServiceData::get_db() const{
-	return this->database;
+	return this->m_database;
 }
 
 sqlite3* ServiceData::open_db(const std::string& db_path) {
@@ -43,3 +26,51 @@ sqlite3* ServiceData::open_db(const std::string& db_path) {
 	}
 	return db;
 }
+
+int ServiceData::startTables() {
+	int rc = 0;
+	const json& config = get_data_model();
+	for (const auto& table : config["DataModel"]) {
+		std::string table_name = table["database_table"];
+		bool unique = table["unique"];
+		std::cout << "Unique: " << unique << std::endl;
+		std::string sql;
+		if (!unique) { 
+			sql = "CREATE TABLE IF NOT EXISTS " + table_name + " (id INTEGER PRIMARY KEY, ";
+		} else 
+		{
+			sql = "CREATE TABLE IF NOT EXISTS " + table_name + " (";
+		}
+		for (const auto& column : table["parameters"]) {
+			std::string column_name = column["db_column"];
+			std::string type = "TEXT";
+			sql += column_name + " " + type + ", ";
+		}
+		sql.pop_back(); 
+		sql.pop_back(); 
+		sql += ");";
+		if (SqliteUtils::executeSql(this->m_database, sql) != 0) {
+			std::cerr << "Error: Unable to create table" << std::endl;
+			rc = 1;
+		}
+	}
+	return rc;
+}
+
+int ServiceData::loadDefault() {
+	int rc = 0;
+	const json& config = get_data_model();
+	for (const auto& table : config["DataModel"]) {
+		std::string table_name = table["database_table"];
+		std::string sql = table["default_sql"];
+	   	if (sql.empty()) {	
+			continue;
+		}
+		if (SqliteUtils::executeSql(this->m_database, sql) != 0) {
+			std::cerr << "Error: Unable to load default data" << std::endl;
+			rc = 1;
+		}
+	}
+	return rc;
+}
+
